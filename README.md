@@ -40,8 +40,8 @@ Follow these steps to run the project locally.
 **1. Clone the repository:**
 ```bash
 # !!! IMPORTANT: Replace this URL with your own repository URL !!!
-git clone [https://github.com/your-username/your-repository-name.git](https://github.com/your-username/your-repository-name.git)
-cd your-repository-name
+git clone [https://github.com/architpr/csv-chat-agent.git)
+cd csv-chat-agent
 ```
 
 **2. Create and activate a virtual environment:**
