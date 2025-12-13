@@ -14,7 +14,7 @@ def create_agent(df: pd.DataFrame):
     load_dotenv()
 
     # Define the model repository ID
-    repo_id = "mistralai/Mistral-7B-Instruct-v0.2"
+    repo_id = "HuggingFaceH4/zephyr-7b-beta"
 
     # 1. Initialize the standard Hugging Face LLM endpoint
     llm = HuggingFaceEndpoint(
@@ -32,6 +32,7 @@ def create_agent(df: pd.DataFrame):
         df,
         verbose=True,
         allow_dangerous_code=True,
+        agent_executor_kwargs={"handle_parsing_errors": True},
     )
     
     return agent
