@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 from dotenv import load_dotenv
@@ -10,8 +11,18 @@ from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe
 def create_agent(df: pd.DataFrame):
     """Creates an AI agent powered by a Hugging Face chat model."""
     
-    # Load environment variables (for the Hugging Face API token)
+    # Load environment variables (for local development)
     load_dotenv()
+
+    # Try to get the API key from environment variables (local) or Streamlit secrets (cloud)
+    api_token = os.environ.get("HUGGINGFACEHUB_API_TOKEN") 
+    if not api_token and "HUGGINGFACEHUB_API_TOKEN" in st.secrets:
+        api_token = st.secrets["HUGGINGFACEHUB_API_TOKEN"]
+        os.environ["HUGGINGFACEHUB_API_TOKEN"] = api_token
+
+    if not api_token:
+        st.error("Hugging Face API token is missing! Please configure it in your Streamlit Cloud Secrets.")
+        st.stop()
 
     # Define the model repository ID
     repo_id = "HuggingFaceH4/zephyr-7b-beta"
@@ -21,6 +32,7 @@ def create_agent(df: pd.DataFrame):
         repo_id=repo_id,
         temperature=0.2,
         max_new_tokens=512,
+        huggingfacehub_api_token=api_token
     )
 
     # 2. Wrap the LLM in a ChatHuggingFace object to match API expectations
@@ -63,9 +75,14 @@ def main():
         if user_question:
             # Display a spinner while the agent is working
             with st.spinner("Thinking..."):
-                # Invoke the agent and get the response
-                response = agent.invoke(user_question)
-                st.write("Answer:", response["output"])
+                try:
+                    # Invoke the agent and get the response
+                    response = agent.invoke(user_question)
+                    st.write("Answer:", response["output"])
+                except Exception as e:
+                    # Catch the HfHubHTTPError and other exceptions to display a clear error message
+                    st.error(f"An error occurred while communicating with the Hugging Face API: {str(e)}")
+                    st.info("If this is an HTTP or authentication error, verify that your Hugging Face API key is correct and has access to the model, or check if the model is currently experiencing downtime.")
 
 # Entry point for the script
 if __name__ == "__main__":
