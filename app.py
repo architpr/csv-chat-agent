@@ -25,7 +25,8 @@ def create_agent(df: pd.DataFrame):
         st.stop()
 
     # Define the model repository ID
-    repo_id = "HuggingFaceH4/zephyr-7b-beta"
+    # Using Qwen 2.5 72B which is supported by Hugging Face's serverless inference API
+    repo_id = "Qwen/Qwen2.5-72B-Instruct"
 
     # 1. Initialize the standard Hugging Face LLM endpoint
     llm = HuggingFaceEndpoint(
